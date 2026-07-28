@@ -258,19 +258,10 @@ body[data-stage] .appbar{box-shadow:inset 0 -3px 0 var(--stage-c);transition:box
 .confetti{position:fixed;top:-12px;z-index:1;width:10px;height:14px;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.7}}
 
-/* ── 안전교육 Before/After 대비 카드 ── */
-.ba{margin:2px 0 4px}
-.ba .row{display:flex;gap:10px;align-items:flex-start;padding:12px 13px;border-radius:12px;font-size:14.5px;font-weight:600;line-height:1.5}
-.ba .row+.row{margin-top:9px}
-.ba .bad{background:var(--err-bg);border:1px solid rgba(255,93,93,.42)}
-.ba .good{background:var(--ok-bg);border:1px solid rgba(62,207,142,.42)}
-.ba .ic{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;margin-top:1px}
-.ba .bad .ic{background:var(--err)} .ba .good .ic{background:var(--ok);color:#0B1B12}
-.ba .row b{display:block;font-size:12px;font-weight:800;letter-spacing:.02em;margin-bottom:2px}
-.ba .bad b{color:var(--err)} .ba .good b{color:var(--ok)}
-.ba .row span:last-child{color:var(--tx)}
-.ba.appear .row{animation:barow .45s both}
-.ba.appear .good{animation-delay:.14s}
+/* ── 안전 규칙 한 줄 카드 ── */
+.rulecard{display:flex;gap:12px;align-items:center;background:var(--ok-bg);border:2px solid var(--ok);border-radius:var(--r-c);padding:16px 18px;animation:barow .4s both}
+.rulecard .rc-ic{flex:0 0 34px;height:34px;border-radius:50%;background:var(--ok);color:#0B1B12;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800}
+.rulecard b{font-size:17px;font-weight:800;line-height:1.45;color:var(--tx)}
 @keyframes barow{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
 /* 퀴즈 정답 강조 배지 */
 .ansbadge{display:inline-flex;align-items:center;gap:9px;padding:7px 15px 7px 9px;border-radius:24px;font-size:15px;font-weight:800;margin-bottom:12px;animation:barow .4s both}
@@ -867,13 +858,15 @@ function eventCard(ev, next) {
         sfx.ok(); starBurst(cx, cy);
         addScore(150, cx, cy);
         if (ev.rule) addRule(ev.rule, ev.cat);
-        modal({tag:ev.quiz ? "정답!" : "잘했어요!", tagCls:"safe", title:ev.okTitle || "올바른 선택이에요", body:ev.why, btn:"계속", cb:next});
+        modal({tag:ev.quiz ? "정답!" : "잘했어요!", tagCls:"safe", title:ev.okTitle || "올바른 선택이에요",
+          body:ruleCard(ev.rule || ev.why), btn:"계속", cb:next});
       } else {
         sfx.bad(); quakeFX(); comboBreak();
         addScore(-50, cx, cy);
         addWeak(ev.cat);
         if (ev.rule) addRule(ev.rule, ev.cat);
-        modal({tag:ev.quiz ? "오답" : "위험한 선택!", tagCls:"danger", title:ev.badTitle || "그건 위험해요", body:ev.why, btn:"계속", cb:next});
+        modal({tag:ev.quiz ? "오답" : "위험한 선택!", tagCls:"danger", title:ev.badTitle || "그건 위험해요",
+          body:ruleCard(ev.rule || ev.why), btn:"계속", cb:next});
       }
     });
     box.appendChild(b);
@@ -884,14 +877,14 @@ function eventCard(ev, next) {
 }
 const EV_STRANGER = {
   tag:"돌발 상황!", cat:"rest",
-  story:"휴게소에서 나오는데, 모르는 어른이 과자를 주며 \"이리 와, 차에서 같이 먹자\"라고 해요. 어떻게 할까?",
+  story:"버스 출발 5분 전! 친구가 \"저 끝에 편의점 있대. 선생님한테 말할 시간 없어, 빨리 갔다 오자\"며 팔을 잡아끌어요.",
   choices:[
-    {t:"\"감사합니다!\" 하고 따라간다"},
-    {t:"큰 소리로 \"싫어요!\" 하고 바로 선생님께 알린다", ok:true},
-    {t:"과자만 받고 조용히 돌아온다"}
+    {t:"시간 없으니까 얼른 뛰어갔다 온다"},
+    {t:"선생님께 말씀드리고 다녀와도 되는지 여쭤본다", ok:true},
+    {t:"친구만 보내고 나는 버스에서 기다린다"}
   ],
-  why:"모르는 사람이 주는 음식은 받지 않고, 절대 따라가지 않아요. 큰 소리로 거절하고 바로 선생님이나 어른에게 알리는 게 가장 안전해요.",
-  rule:"모르는 사람이 따라오라고 하면 큰 소리로 거절하고 선생님께 알려요."
+  why:"버스가 먼저 출발하면 혼자 남겨져요. 친구를 혼자 보내는 것도 위험해요.",
+  rule:"어디를 가든 선생님께 먼저 말씀드려요!"
 };
 const EV_LOST = {
   tag:"돌발 상황!", cat:"rest",
@@ -901,8 +894,8 @@ const EV_LOST = {
     {t:"침착하게 미리 약속한 만남의 장소로 가서 기다린다", ok:true},
     {t:"혼자 출구 밖으로 나가 본다"}
   ],
-  why:"당황해서 뛰어다니면 더 멀어져요. 침착하게 약속한 만남의 장소로 가서 기다리고, 근처 직원에게 도움을 요청해도 좋아요.",
-  rule:"일행과 떨어지면 미리 약속한 만남의 장소에서 기다려요."
+  why:"뛰어다니면 오히려 더 멀어져요.",
+  rule:"일행과 떨어지면 약속 장소에서 기다려요!"
 };
 /* 깜짝 퀴즈 — 박물관에서 출제되지 않은 문항 재활용 */
 function popQuizEvent(next) {
@@ -1047,12 +1040,9 @@ function markFound(sceneSel, hotEl, danger) {
   r.style.left = st.left; r.style.top = st.top; r.style.width = st.width; r.style.height = st.height;
   $(sceneSel).appendChild(r);
 }
-/* 안전교육 강조 — 위험 행동 / 올바른 행동 대비 카드 */
-function baCard(bad, good) {
-  return '<div class="ba appear">' +
-    '<div class="row bad"><span class="ic">✕</span><span><b>이렇게 하면 위험해요</b>' + bad + '</span></div>' +
-    '<div class="row good"><span class="ic">✓</span><span><b>이렇게 해야 안전해요</b>' + good + '</span></div>' +
-  '</div>';
+/* 안전교육 강조 — 지켜야 할 규칙 한 줄 */
+function ruleCard(rule) {
+  return '<div class="rulecard"><span class="rc-ic">✓</span><b>' + rule + '</b></div>';
 }
 /* 파티클 버스트 */
 const PT_COLORS = ["#FF8A3D","#F5B32F","#3ECF8E","#3BB8A5","#FF5D5D","#FFFFFF"];
@@ -1166,7 +1156,7 @@ function findStage(opt) {
     pause();
     if (last) { $("#vig").classList.remove("on"); }
     modal({tag:(opt.foundTag || "위험 발견") + " " + found + "/" + opt.total,
-      body:t.body + (t.bad && t.good ? baCard(t.bad, t.good) : ""), title:t.title,
+      body:ruleCard(t.rule), title:t.title,
       tagCls: opt.foundTagCls,
       btn: last ? "미션 완료" : "계속 찾기",
       cb: last ? () => { done = true; addScore(Math.ceil(left) * 5); opt.onClear(Math.ceil(left)); } : () => resume()});
@@ -1238,17 +1228,16 @@ const S1 = {
   seen: new Set(),
   info: {
     nobelt: {label:"안전벨트 안 맨 친구 찾기", danger:true,
-             title:"벨트를 안 매고 일어났어요!", body:"버스가 갑자기 멈추면 몸이 붕 떠서 앞좌석이나 바닥에 부딪혀 크게 다쳐요.",
-             bad:"안전벨트를 풀고 자리에서 일어나 장난쳐요.", good:"자리에 앉아 안전벨트를 골반에 딱 맞게 매요.",
-             rule:"버스에서는 자리에 앉아 안전벨트를 매요.",
+             title:"벨트를 안 매고 일어났어요!",
+             rule:"버스에서는 반드시 안전벨트를 매요!",
              hint:"친구들이 모두 주황색 안전벨트를 맸는지 한 명씩 살펴봐요"},
     ext:    {label:"소화기 위치 알아두기",
-             title:"소화기 발견!", body:"불이 나면 큰 소리로 \"불이야!\"를 외치고 어른에게 알려요. 소화기가 어디 있는지 미리 알아 두면 비상시에 빨라요.",
-             rule:"버스 소화기 위치를 미리 확인해요.",
+             title:"소화기 발견!",
+             rule:"버스 소화기 위치를 미리 알아둬요!",
              hint:"빨간색 소방 도구가 어딘가에 있어요"},
     hammer: {label:"비상망치 위치 알아두기",
-             title:"비상탈출망치 발견!", body:"비상시에는 망치로 창문의 네 귀퉁이를 두드려 깨고 탈출해요. 평소에는 절대 만지지 않아요.",
-             rule:"비상망치는 창문 네 귀퉁이를 두드려 사용해요.",
+             title:"비상탈출망치 발견!",
+             rule:"비상망치로 창문 네 귀퉁이를 깨고 탈출해요!",
              hint:"투명한 상자 안에 든 도구를 찾아봐요"}
   }
 };
@@ -1276,7 +1265,7 @@ $("#s1-scene").addEventListener("click", e => {
   } else sfx.tap();
   modal({tag:(info.danger ? "위험 발견 " : "안전장치 발견 ") + S1.seen.size + "/3",
     tagCls:info.danger ? "danger" : "safe", title:info.title,
-    body:info.body + (info.bad && info.good ? baCard(info.bad, info.good) : ""),
+    body:ruleCard(info.rule),
     cb: () => {
       if (S1.seen.size === 3 && $("#s1-go").disabled && !S1.done) {
         $("#s1-go").disabled = false;
@@ -1315,18 +1304,14 @@ const ST2 = findStage({
   scene:"#s2-scene", chips:"#s2-chips", bar:"#s2-bar", num:"#s2-num", hint:"#s2-hint",
   total:4, cat:"rest",
   targets:{
-    cars:   {title:"차 사이로 뛰지 않아요", body:"주차장의 차들은 언제 움직일지 몰라요. 운전자는 차 사이에서 갑자기 튀어나오는 아이를 보지 못해요!",
-             bad:"주차장에서 차와 차 사이로 뛰어다녀요.", good:"차에서 멀찍이 떨어져, 어른과 함께 다녀요.",
-             rule:"주차장에서는 차 사이로 다니지 않아요.", hint:"주차된 차들 쪽을 잘 살펴봐요"},
-    hotfood:{title:"뜨거운 음식 들고 뛰지 않아요", body:"뜨거운 국물이 쏟아지면 큰 화상을 입어요.",
-             bad:"뜨거운 국물·음식을 손에 들고 뛰어요.", good:"음식은 자리에 앉아서 천천히 먹어요.",
-             rule:"뜨거운 음식을 들고 뛰지 않아요.", hint:"김이 모락모락 나는 것을 든 친구가 있어요"},
-    lost:   {title:"혼자 다니지 않아요", body:"휴게소는 사람이 많아 길을 잃기 쉬워요.",
-             bad:"혼자 여기저기 돌아다니다 일행과 떨어져요.", good:"친구와 함께 다니고, 일행과 떨어지면 미리 약속한 만남의 장소로 가요.",
-             rule:"일행과 떨어지면 미리 약속한 만남의 장소에서 기다려요.", hint:"혼자 두리번거리는 친구를 찾아봐요"},
-    slip:   {title:"젖은 바닥을 조심해요", body:"노란 미끄럼 주의 표지판은 바닥이 젖어 있다는 신호예요.",
-             bad:"젖은 바닥·미끄럼 주의 구역에서 뛰어요.", good:"표지판이 보이면 뛰지 않고 천천히 걸어요.",
-             rule:"미끄럼 주의 표지판이 있으면 천천히 걸어요.", hint:"노란색 표지판 근처를 봐요"}
+    cars:   {title:"차 사이로 뛰지 않아요",
+             rule:"주차장에서는 차 사이로 다니지 않아요!", hint:"주차된 차들 쪽을 잘 살펴봐요"},
+    hotfood:{title:"뜨거운 음식 들고 뛰지 않아요",
+             rule:"뜨거운 음식은 앉아서 먹어요!", hint:"김이 모락모락 나는 것을 든 친구가 있어요"},
+    lost:   {title:"혼자 다니지 않아요",
+             rule:"일행과 떨어지면 약속 장소에서 기다려요!", hint:"혼자 두리번거리는 친구를 찾아봐요"},
+    slip:   {title:"젖은 바닥을 조심해요",
+             rule:"미끄럼 주의 표지판이 있으면 천천히 걸어요!", hint:"노란색 표지판 근처를 봐요"}
   },
   onClear(sec) {
     gainBadge();
@@ -1344,18 +1329,14 @@ const ST3 = findStage({
   scene:"#s3-scene", chips:"#s3-chips", bar:"#s3-bar", num:"#s3-num", hint:"#s3-hint",
   total:4, cat:"park",
   targets:{
-    cut:  {title:"새치기는 안 돼요", body:"차례를 지키는 게 모두가 빨리, 안전하게 타는 길이에요.",
-           bad:"줄에서 밀거나 끼어들어 새치기해요.", good:"차례를 지켜 줄을 서고 밀지 않아요.",
-           rule:"줄을 설 때는 밀지 않고 차례를 지켜요.", hint:"길게 줄 선 곳을 잘 봐요"},
-    bar:  {title:"안전바를 꼭 잡아요", body:"놀이기구는 빠르게 움직여요.",
-           bad:"놀이기구에서 일어나거나 몸을 밖으로 내밀어요.", good:"안전바를 꼭 잡고 끝까지 앉아 있어요.",
-           rule:"놀이기구에서는 안전바를 잡고 일어나지 않아요.", hint:"하늘 위 놀이기구를 올려다봐요"},
-    fence:{title:"펜스를 넘지 않아요", body:"안전 펜스는 우리를 지켜 주는 선이에요.",
-           bad:"안전 펜스를 넘어가 물건을 주우려 해요.", good:"펜스 안에서 관람하고, 직원에게 부탁해요.",
-           rule:"안전 펜스는 절대 넘어가지 않아요.", hint:"울타리 근처를 살펴봐요"},
-    run:  {title:"앞을 보고 걸어요", body:"사람이 많은 곳에서 뛰면 부딪혀 다쳐요. 음료를 들었을 땐 더 조심!",
-           bad:"앞을 안 보고 사람 사이를 뛰어다녀요.", good:"앞을 보고 천천히 걸어 다녀요.",
-           rule:"사람 많은 곳에서는 뛰지 않고 걸어요.", hint:"바쁘게 달리는 친구가 있어요"}
+    cut:  {title:"새치기는 안 돼요",
+           rule:"줄은 밀지 말고 차례를 지켜요!", hint:"길게 줄 선 곳을 잘 봐요"},
+    bar:  {title:"안전바를 꼭 잡아요",
+           rule:"놀이기구에서는 안전바를 꼭 잡아요!", hint:"하늘 위 놀이기구를 올려다봐요"},
+    fence:{title:"펜스를 넘지 않아요",
+           rule:"안전 펜스는 절대 넘지 않아요!", hint:"울타리 근처를 살펴봐요"},
+    run:  {title:"앞을 보고 걸어요",
+           rule:"사람 많은 곳에서는 뛰지 않아요!", hint:"바쁘게 달리는 친구가 있어요"}
   },
   onClear(sec) {
     gainBadge();
@@ -1371,14 +1352,14 @@ const ST3 = findStage({
 /* ---------- 스테이지4 박물관 (O/X — 8문항 풀에서 5개 랜덤) ---------- */
 const S4 = {
   pool: [
-    {q:"전시물이 신기하면 살짝 만져 봐도 된다.", a:false, why:"전시물은 눈으로만 봐요. 손의 기름도 소중한 유물을 상하게 해요."},
-    {q:"전시실에서는 뛰지 않고 천천히 걸어 다닌다.", a:true, why:"맞아요! 뛰다가 부딪히면 나도, 유물도 다칠 수 있어요."},
-    {q:"어두운 전시실에서는 플래시를 켜고 사진을 찍는다.", a:false, why:"플래시 빛은 유물을 상하게 해요. 촬영 가능 표시를 먼저 확인해요."},
-    {q:"친구가 멀리 보이면 큰 소리로 이름을 불러 알린다.", a:false, why:"전시실은 조용히! 하고 싶은 말은 다가가서 작은 목소리로 해요."},
-    {q:"무리에서 떨어지면 정해진 약속 장소에서 기다린다.", a:true, why:"맞아요! 혼자 찾아 헤매지 말고 약속 장소에서 만나요."},
-    {q:"전시물 앞 안내선(관람선) 안쪽으로 들어가 가까이 본다.", a:false, why:"안내선은 유물과 나를 지키는 선이에요. 선 밖에서 관람해요."},
-    {q:"간식은 전시실 밖 정해진 휴게 공간에서만 먹는다.", a:true, why:"맞아요! 전시실 안에서는 음식을 먹지 않아요."},
-    {q:"궁금한 것은 손을 들고 해설사 선생님께 조용히 질문한다.", a:true, why:"맞아요! 설명 중에는 조용히 듣고, 질문은 손을 들고 차례대로 해요."}
+    {q:"전시물이 신기하면 살짝 만져 봐도 된다.", a:false, why:"전시물은 눈으로만 봐요!"},
+    {q:"전시실에서는 뛰지 않고 천천히 걸어 다닌다.", a:true, why:"맞아요! 전시실에서는 뛰지 않고 걸어요!"},
+    {q:"어두운 전시실에서는 플래시를 켜고 사진을 찍는다.", a:false, why:"전시실에서는 플래시를 켜지 않아요!"},
+    {q:"친구가 멀리 보이면 큰 소리로 이름을 불러 알린다.", a:false, why:"전시실에서는 작은 목소리로 말해요!"},
+    {q:"무리에서 떨어지면 정해진 약속 장소에서 기다린다.", a:true, why:"맞아요! 일행과 떨어지면 약속 장소에서 기다려요!"},
+    {q:"전시물 앞 안내선(관람선) 안쪽으로 들어가 가까이 본다.", a:false, why:"관람선 밖에서 관람해요!"},
+    {q:"간식은 전시실 밖 정해진 휴게 공간에서만 먹는다.", a:true, why:"맞아요! 전시실 안에서는 음식을 먹지 않아요!"},
+    {q:"궁금한 것은 손을 들고 해설사 선생님께 조용히 질문한다.", a:true, why:"맞아요! 질문은 손을 들고 차례대로 해요!"}
   ],
   qs: [], queue: [], idx: 0, timer: null, left: 0, answered: false, wrong: new Set(), lastBeep: 0,
   start() {
@@ -1442,7 +1423,7 @@ const S4 = {
       const sym = q.a ? "O" : "X";
       const why = q.why.replace(/^맞아요! /, "");
       modal({tag:"정답", tagCls:"safe", title:"정답이에요",
-        body:'<div class="ansbadge ao"><span class="big">' + sym + '</span>정답! 답은 ' + sym + ' 예요</div>' + why,
+        body:'<div class="ansbadge ao"><span class="big">' + sym + '</span>정답! 답은 ' + sym + ' 예요</div>' + ruleCard(why),
         btn:"다음 문제", cb:() => this.show()});
     } else {
       comboBreak(); sfx.bad();
@@ -1451,12 +1432,11 @@ const S4 = {
       addWeak("museum");
       this.queue.push(this.queue.shift());
       if (loseHeart(() => this.start())) return; // 게임오버 → 퀴즈 새로 출제
-      const again = this.queue.length === 1 ? "이 문제를 바로 다시 풀어요." : "이 문제는 잠시 뒤에 다시 나와요.";
       const sym = q.a ? "O" : "X";
       const why = q.why.replace(/^맞아요! /, "");
       modal({tag: v === null ? "시간 초과" : "오답", tagCls:"danger",
         title: v === null ? "시간이 다 됐어요" : "다시 생각해 봐요",
-        body:'<div class="ansbadge ax"><span class="big">' + sym + '</span>정답은 ' + sym + ' 예요</div>' + why + '<br><b style="color:var(--err)">하트를 1개 잃었어요.</b> ' + again,
+        body:'<div class="ansbadge ax"><span class="big">' + sym + '</span>정답은 ' + sym + ' 예요</div>' + ruleCard(why) + '<p style="margin-top:12px;color:var(--err);font-weight:800">하트를 1개 잃었어요</p>',
         btn:"계속", cb:() => this.show()});
     }
   }
@@ -1469,18 +1449,14 @@ const ST5 = findStage({
   scene:"#s5-scene", chips:"#s5-chips", bar:"#s5-bar", num:"#s5-num", hint:"#s5-hint",
   total:4, cat:"room",
   targets:{
-    jump:  {title:"침대에서 뛰지 않아요", body:"침대는 트램펄린이 아니에요.",
-            bad:"침대 위에서 뛰고 장난쳐요. (2층 침대는 더 위험!)", good:"침대에서는 얌전히, 오르내릴 땐 사다리를 이용해요.",
-            rule:"침대 위에서 뛰거나 장난치지 않아요.", hint:"잠자는 곳 위를 잘 봐요"},
-    win:   {title:"창문 밖으로 몸을 내밀지 않아요", body:"방충망은 사람 몸을 지탱해 주지 못해요.",
-            bad:"창틀에 걸터앉거나 창밖으로 몸을 내밀어요.", good:"창문에서 떨어져 있고, 필요하면 어른에게 부탁해요.",
-            rule:"창문에 걸터앉거나 몸을 내밀지 않아요.", hint:"바깥이 보이는 곳을 살펴봐요"},
-    plug:  {title:"문어발 콘센트는 위험해요", body:"플러그를 잔뜩 꽂으면 뜨거워져 불이 날 수 있어요. 물 근처는 감전 위험까지!",
-            bad:"한 콘센트에 플러그를 문어발로 잔뜩 꽂아요.", good:"플러그는 나눠 꽂고, 콘센트에서 물을 멀리 둬요.",
-            rule:"콘센트에 플러그를 문어발로 꽂지 않고, 물을 멀리 둬요.", hint:"전기를 꽂는 곳을 찾아봐요"},
-    noodle:{title:"뜨거운 것을 들고 뛰지 않아요", body:"뜨거운 물이 쏟아지면 큰 화상을 입어요.",
-            bad:"뜨거운 컵라면·물을 들고 뛰거나 장난쳐요.", good:"뜨거운 음식은 자리에 앉아 천천히 먹어요.",
-            rule:"뜨거운 음식을 들고 이동하지 않아요.", hint:"김이 나는 것을 든 친구를 찾아요"}
+    jump:  {title:"침대에서 뛰지 않아요",
+            rule:"침대 위에서 뛰거나 장난치지 않아요!", hint:"잠자는 곳 위를 잘 봐요"},
+    win:   {title:"창문 밖으로 몸을 내밀지 않아요",
+            rule:"창문에 걸터앉거나 몸을 내밀지 않아요!", hint:"바깥이 보이는 곳을 살펴봐요"},
+    plug:  {title:"문어발 콘센트는 위험해요",
+            rule:"콘센트에 플러그를 문어발로 꽂지 않아요!", hint:"전기를 꽂는 곳을 찾아봐요"},
+    noodle:{title:"뜨거운 것을 들고 뛰지 않아요",
+            rule:"뜨거운 음식은 들고 다니지 않아요!", hint:"김이 나는 것을 든 친구를 찾아요"}
   },
   onClear(sec) {
     gainBadge();
@@ -1512,12 +1488,12 @@ const ST6 = findStage({
   scene:"#s6-scene", chips:"#s6-chips", bar:"#s6-bar", num:"#s6-num", hint:"#s6-hint",
   total:3, foundTag:"발견", foundTagCls:"safe", missMsg:"여기엔 아무것도 없어요", danger:false, cat:"escape",
   targets:{
-    alarm: {title:"화재경보기를 눌러요", body:"빨간 화재경보 버튼을 누르면 건물 전체에 경보가 울려 모두가 알게 돼요. \"불이야!\" 하고 큰 소리로 외치는 것도 잊지 마세요.",
-            rule:"불을 발견하면 \"불이야!\" 외치고 화재경보기를 눌러요.", hint:"벽에 붙은 빨간 버튼을 손전등으로 비춰 봐요"},
-    extbox:{title:"소화기 위치 확인", body:"소화기는 어른이 초기의 작은 불을 끌 때 쓰는 거예요. 어린이는 불을 끄려 하지 말고 대피가 최우선!",
-            rule:"어린이는 불을 끄려 하지 말고 대피가 최우선이에요.", hint:"빨간 통이 어딘가 놓여 있어요"},
-    exit:  {title:"초록 비상구 유도등", body:"초록 유도등은 밖으로 나가는 길을 알려 줘요. 연기 속에서도 유도등만 따라가면 비상구가 나와요. 엘리베이터 대신 계단으로!",
-            rule:"대피할 때는 초록 유도등을 따라 계단으로 이동해요.", hint:"초록 불빛을 찾아 손전등을 움직여 봐요"}
+    alarm: {title:"화재경보기를 눌러요",
+            rule:"불을 보면 \"불이야!\" 외치고 경보기를 눌러요!", hint:"벽에 붙은 빨간 버튼을 손전등으로 비춰 봐요"},
+    extbox:{title:"소화기 위치 확인",
+            rule:"어린이는 불을 끄지 말고 먼저 대피해요!", hint:"빨간 통이 어딘가 놓여 있어요"},
+    exit:  {title:"초록 비상구 유도등",
+            rule:"초록 유도등을 따라 계단으로 대피해요!", hint:"초록 불빛을 찾아 손전등을 움직여 봐요"}
   },
   onClear() {
     $("#s6-order").style.display = "block";
@@ -1621,16 +1597,16 @@ const S119 = orderPuzzle({
 /* 최종 관문 — 종합 복습 O/X (하트 무손실, 전부 맞혀야 문이 열림) */
 const FINAL = {
   pool: [
-    {cat:"bus",    q:"버스에서 내리자마자 버스 앞이나 뒤로 바로 길을 건넌다.", a:false, why:"버스가 완전히 떠난 뒤, 좌우를 살피고 건너요. 버스 바로 앞뒤는 운전자가 나를 보지 못해요."},
-    {cat:"bus",    q:"버스가 완전히 멈춘 뒤에 안전벨트를 풀고 일어난다.", a:true,  why:"맞아요! 버스가 멈추기 전에 일어나면 넘어져 다칠 수 있어요."},
-    {cat:"rest",   q:"일행과 떨어지면 미리 약속한 만남의 장소에서 기다린다.", a:true, why:"맞아요! 무작정 찾아다니지 말고 약속한 곳에서 만나요."},
-    {cat:"rest",   q:"뜨거운 국물은 들고 걸어 다니면서 먹어도 된다.", a:false, why:"뜨거운 음식은 자리에 앉아서! 쏟으면 큰 화상을 입어요."},
-    {cat:"park",   q:"놀이기구에서는 안전바를 꼭 잡고 끝까지 앉아 있는다.", a:true, why:"맞아요! 움직이는 기구에서 일어나면 정말 위험해요."},
-    {cat:"park",   q:"떨어뜨린 물건은 안전 펜스를 넘어가 직접 줍는다.", a:false, why:"펜스는 절대 넘지 않아요. 직원에게 부탁해요."},
-    {cat:"museum", q:"전시물은 눈으로만 관람한다.", a:true, why:"맞아요! 손의 기름도 유물을 상하게 해요."},
-    {cat:"room",   q:"콘센트 한 곳에 플러그를 잔뜩 꽂아도 괜찮다.", a:false, why:"문어발 콘센트는 뜨거워져 불이 날 수 있어요."},
-    {cat:"escape", q:"불이 나면 엘리베이터를 타고 빨리 내려간다.", a:false, why:"불이 나면 엘리베이터는 멈출 수 있어요. 꼭 계단으로!"},
-    {cat:"escape", q:"연기가 많으면 몸을 낮추고 코와 입을 가리고 이동한다.", a:true, why:"맞아요! 연기는 위로 모이니 몸을 낮춰요."}
+    {cat:"bus",    q:"버스에서 내리자마자 버스 앞이나 뒤로 바로 길을 건넌다.", a:false, why:"버스 앞뒤로 건너지 않아요!"},
+    {cat:"bus",    q:"버스가 완전히 멈춘 뒤에 안전벨트를 풀고 일어난다.", a:true,  why:"맞아요! 버스가 멈춘 뒤에 일어나요!"},
+    {cat:"rest",   q:"일행과 떨어지면 미리 약속한 만남의 장소에서 기다린다.", a:true, why:"맞아요! 일행과 떨어지면 약속 장소에서 기다려요!"},
+    {cat:"rest",   q:"뜨거운 국물은 들고 걸어 다니면서 먹어도 된다.", a:false, why:"뜨거운 음식은 앉아서 먹어요!"},
+    {cat:"park",   q:"놀이기구에서는 안전바를 꼭 잡고 끝까지 앉아 있는다.", a:true, why:"맞아요! 놀이기구에서는 안전바를 꼭 잡아요!"},
+    {cat:"park",   q:"떨어뜨린 물건은 안전 펜스를 넘어가 직접 줍는다.", a:false, why:"안전 펜스는 절대 넘지 않아요!"},
+    {cat:"museum", q:"전시물은 눈으로만 관람한다.", a:true, why:"맞아요! 전시물은 눈으로만 봐요!"},
+    {cat:"room",   q:"콘센트 한 곳에 플러그를 잔뜩 꽂아도 괜찮다.", a:false, why:"콘센트에 플러그를 문어발로 꽂지 않아요!"},
+    {cat:"escape", q:"불이 나면 엘리베이터를 타고 빨리 내려간다.", a:false, why:"불이 나면 엘리베이터 대신 계단으로!"},
+    {cat:"escape", q:"연기가 많으면 몸을 낮추고 코와 입을 가리고 이동한다.", a:true, why:"맞아요! 연기 속에서는 몸을 낮추고 이동해요!"}
   ],
   qs:[], queue:[], idx:0, answered:false,
   start() {
@@ -1676,7 +1652,7 @@ const FINAL = {
         return;
       }
       modal({tag:"정답", tagCls:"safe", title:"자물쇠가 하나 풀렸어요!",
-        body:'<div class="ansbadge ao"><span class="big">' + sym + '</span>정답! 답은 ' + sym + ' 예요</div>' + why,
+        body:'<div class="ansbadge ao"><span class="big">' + sym + '</span>정답! 답은 ' + sym + ' 예요</div>' + ruleCard(why),
         btn:"다음 자물쇠", cb:() => this.show()});
     } else {
       sfx.bad(); quakeFX();
@@ -1684,7 +1660,7 @@ const FINAL = {
       addWeak(q.cat);
       this.queue.push(this.queue.shift());
       modal({tag:"오답", tagCls:"danger", title:"자물쇠가 안 열려요",
-        body:'<div class="ansbadge ax"><span class="big">' + sym + '</span>정답은 ' + sym + ' 예요</div>' + why + "<br>이 문제는 잠시 뒤 다시 나와요. (하트는 잃지 않아요)",
+        body:'<div class="ansbadge ax"><span class="big">' + sym + '</span>정답은 ' + sym + ' 예요</div>' + ruleCard(why),
         btn:"계속", cb:() => this.show()});
     }
   }
