@@ -311,20 +311,8 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
 #eventcard .evbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #0E1426}
 #eventcard .evbtn:last-child{margin-bottom:0}
 
-/* ── 최종 시험 / 다짐 ── */
+/* ── 최종 시험 ── */
 .doorline{font-size:13.5px;color:var(--tx2);text-align:center;margin:0 20px 4px}
-.pledgebox{margin:16px 12px;background:linear-gradient(180deg,var(--card),var(--bg2));border:2px solid var(--amber);border-radius:var(--r-c);padding:20px}
-.pledgebox h3{font-size:17px;font-weight:800;text-align:center;margin-bottom:4px}
-.pledgebox .hint{font-size:13px;color:var(--tx2);text-align:center;margin-bottom:12px}
-.pledge-list{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
-.pledge-list button{text-align:left;border:2px solid var(--bd);border-radius:var(--r-s);background:var(--bg2);padding:11px 12px;font-size:13.5px;font-weight:700;line-height:1.4;display:flex;gap:9px;align-items:flex-start}
-.pledge-list button .pk{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;margin-top:1px}
-.pledge-list button.sel{border-color:var(--ok);background:var(--ok-bg)}
-.pledge-list button.sel .pk{border-color:var(--ok);background:var(--ok);color:#0B1B12}
-.cert-pledges{list-style:none;margin:12px auto 0;max-width:420px;text-align:left}
-.cert-pledges li{font-size:13.5px;padding:5px 0;border-bottom:1px dashed #D9C9A8;display:flex;gap:8px}
-.cert-pledges li::before{content:"✔";color:#B07A10;font-weight:800}
-.cert-pledges li:last-child{border-bottom:none}
 .gold-star{position:absolute;top:14px;right:16px;font-size:30px;filter:drop-shadow(0 0 6px rgba(245,179,47,.8))}
 
 /* ── 모바일 최적화 (소형 화면) ── */
@@ -603,18 +591,11 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
     <h2>안전 지킴이 수료증</h2>
     <span class="name" id="cert-name"></span>
     <p>위 학생은 「현장체험학습 안전 대탈출」의 안전 미션 6가지를 모두 통과하고<br>안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.</p>
-    <p style="margin-top:10px;font-weight:700;color:#B07A10">나의 다짐</p>
-    <ol class="cert-pledges" id="cert-pledges"></ol>
     <div class="cert-grade" id="cert-grade"></div>
     <div class="date" id="cert-date"></div>
     <span class="gold-star" id="gold-star" style="display:none">⭐</span>
   </div>
-  <div class="pledgebox" id="pledge-box" style="display:none">
-    <h3>내가 꼭 지킬 약속 3가지</h3>
-    <div class="hint">오늘 배운 약속 중에서 스스로 지킬 3가지를 골라요</div>
-    <div class="pledge-list" id="pledge-list"></div>
-  </div>
-  <div class="namerow" id="namerow" style="display:none">
+  <div class="namerow" id="namerow">
     <input type="text" id="name-input" maxlength="10" placeholder="이름을 입력하세요">
     <button class="btn" id="btn-cert">수료증 받기</button>
   </div>
@@ -661,7 +642,7 @@ const DIFF = {
 const BADGES = ["버스 안전", "휴게소 안전", "놀이공원 안전", "관람 예절", "숙소 안전", "화재 대피"];
 const S = { stage:0, badges:0, rules:[], muted:false, playing:false,
             diff:"normal", score:0, combo:0, maxCombo:0, lives:3,
-            hintUsed:0, missCount:0, weak:{}, finalPerfect:true, pledges:[], remix:false };
+            hintUsed:0, missCount:0, weak:{}, finalPerfect:true, remix:false };
 S.eggsRun = new Set();
 /* 취약 카테고리 기록 — 최종 시험 출제 가중치로 사용 */
 function addWeak(cat) { if (cat) S.weak[cat] = (S.weak[cat] || 0) + 1; }
@@ -1691,7 +1672,6 @@ function finishGame() {
   renderRules();
   renderBadgeRecap();
   $("#r-eggs").textContent = eggFound().size + " / 6";
-  buildPledges();
   showResult();          // 점수 카운트업 → 드럼롤 → 등급 공개
   checkAchievements();
   sfx.clear();
@@ -1719,29 +1699,6 @@ function checkAchievements() {
     row.appendChild(s);
   });
   $("#achv-end").style.display = "block";
-}
-/* 나의 다짐 3개 고르기 — 다 고르면 이름 입력 열림 */
-function buildPledges() {
-  const list = $("#pledge-list");
-  list.innerHTML = "";
-  S.pledges = [];
-  S.rules.forEach(r => {
-    const b = document.createElement("button");
-    b.innerHTML = '<span class="pk">✓</span><span>' + r.txt + '</span>';
-    b.addEventListener("click", () => {
-      const i = S.pledges.indexOf(r.txt);
-      if (i >= 0) { S.pledges.splice(i, 1); b.classList.remove("sel"); }
-      else {
-        if (S.pledges.length >= 3) { toast("3가지까지만 고를 수 있어요"); return; }
-        S.pledges.push(r.txt); b.classList.add("sel"); sfx.tap();
-      }
-      const full = S.pledges.length === 3;
-      $("#namerow").style.display = full ? "flex" : "none";
-      if (full) { toast("좋아요! 이름을 쓰고 수료증을 받아요"); $("#namerow").scrollIntoView({behavior:"smooth", block:"center"}); }
-    });
-    list.appendChild(b);
-  });
-  $("#pledge-box").style.display = "block";
 }
 /* 안전약속을 카테고리별로 그룹핑해 정리 */
 function renderRules() {
@@ -1811,12 +1768,8 @@ $("#btn-cert").addEventListener("click", () => {
   $("#cert-name").textContent = name;
   $("#cert-grade").textContent = "최종 " + calcGrade() + "등급 · " + S.score + "점";
   $("#cert-date").textContent = new Date().toLocaleDateString("ko-KR", {year:"numeric", month:"long", day:"numeric"});
-  const ol = $("#cert-pledges");
-  ol.innerHTML = "";
-  S.pledges.forEach(p => { const li = document.createElement("li"); li.textContent = p; ol.appendChild(li); });
   if (eggFound().size >= 6) $("#gold-star").style.display = "block"; // 숨은 친구 마스터
   $("#cert").style.display = "block";
-  $("#pledge-box").style.display = "none";
   $("#namerow").style.display = "none";
   $("#cert-actions").style.display = "block";
   sfx.clear(); confetti();
@@ -1840,7 +1793,7 @@ function drawShield(x, cx, cy, s) {
 async function downloadCert() {
   const name = ($("#cert-name").textContent || "학생").trim();
   try { if (document.fonts) { await document.fonts.load("800 50px Pretendard"); await document.fonts.load("400 24px Pretendard"); } } catch (e) {}
-  const W = 1000, H = 880, c = document.createElement("canvas");
+  const W = 1000, H = 718, c = document.createElement("canvas");
   c.width = W; c.height = H;
   const x = c.getContext("2d");
   x.fillStyle = "#FBF6EC"; x.fillRect(0, 0, W, H);
@@ -1861,21 +1814,10 @@ async function downloadCert() {
   x.fillText("위 학생은 「현장체험학습 안전 대탈출」의 안전 미션 6가지를 모두 통과하고", W / 2, 372);
   x.fillText("안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.", W / 2, 408);
   for (let i = 0; i < 6; i++) drawShield(x, W / 2 - (6 * 46) / 2 + i * 46 + 23, 472, 15);
-  if (S.pledges.length) {
-    x.fillStyle = "#B07A10"; x.font = "800 25px Pretendard, sans-serif";
-    x.fillText("나 의  다 짐", W / 2, 548);
-    x.fillStyle = "#2E2418"; x.font = "400 21px Pretendard, sans-serif";
-    /* 가운데 정렬하면 ✔ 위치가 줄마다 어긋나므로, 가장 긴 줄 기준으로 왼쪽을 맞춘다 */
-    const lines = S.pledges.map(p => "✔  " + p);
-    const startX = W / 2 - Math.min(Math.max(...lines.map(t => x.measureText(t).width)), W - 160) / 2;
-    x.textAlign = "left";
-    lines.forEach((t, i) => x.fillText(t, startX, 592 + i * 38, W - 160));
-    x.textAlign = "center";
-  }
   x.fillStyle = "#B07A10"; x.font = "800 26px Pretendard, sans-serif";
-  x.fillText($("#cert-grade").textContent, W / 2, 742);
+  x.fillText($("#cert-grade").textContent, W / 2, 580);
   x.fillStyle = "#2E2418"; x.font = "400 23px Pretendard, sans-serif";
-  x.fillText($("#cert-date").textContent, W / 2, 800);
+  x.fillText($("#cert-date").textContent, W / 2, 638);
   const a = document.createElement("a");
   a.download = "현장체험학습_안전지킴이_수료증_" + name + ".png";
   a.href = c.toDataURL("image/png"); a.click();
