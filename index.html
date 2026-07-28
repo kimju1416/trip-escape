@@ -175,11 +175,13 @@ body[data-stage] .appbar{box-shadow:inset 0 -3px 0 var(--stage-c);transition:box
 .hero img{display:block;width:100%}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 72%,rgba(19,26,46,.5))}
 .intro-card{margin:14px 12px 0;background:var(--card);border:2px solid var(--bd);border-radius:var(--r-c);padding:20px}
-.intro-card h2{font-size:19px;font-weight:800;margin-bottom:8px}
-.intro-card .story{font-size:14.5px;color:var(--tx2);margin-bottom:12px}
-.intro-card .story b{color:var(--amber)}
-.intro-card ol{margin:0 0 6px 20px;font-size:14.5px;color:var(--tx2)}
-.intro-card li{margin-bottom:3px}
+.tagline{font-size:15.5px;font-weight:700;text-align:center;line-height:1.5}
+.tagline b{color:var(--amber)}
+.stage-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.stage-strip .sp{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r-s);padding:10px 4px;font-size:12px;font-weight:700;color:var(--tx2)}
+.stage-strip .ico{font-size:22px}
+.microhint{font-size:12.5px;color:var(--tx2);text-align:center;margin-bottom:10px}
+.microhint b{color:var(--tx)}
 .best{font-size:13px;color:var(--tx2);margin:6px 0 12px}
 .best b{color:var(--amber)}
 .diffrow{display:flex;gap:10px}
@@ -366,6 +368,9 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
   .badge-recap small{font-size:8.5px}
   .diff b{font-size:15.5px}
   .diff span{font-size:10.5px}
+  .tagline{font-size:14px}
+  .stage-strip .sp{font-size:11px;padding:8px 2px}
+  .stage-strip .ico{font-size:19px}
   .sheet{padding:18px 16px calc(16px + env(safe-area-inset-bottom))}
   .sheet h3{font-size:18px}
   .sheet p{font-size:15px}
@@ -393,17 +398,16 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
 <section class="screen on" id="scr-intro">
   <div class="hero"><img src="img/trip01_cover.jpg" alt="현장체험학습 안전 대탈출 표지"></div>
   <div class="intro-card">
-    <h2>배지 6개를 모아야 여행이 완성돼요</h2>
-    <p class="story">설레는 현장체험학습 날 아침, 선생님이 비밀 미션 카드를 내밀었다.<br>"각 장소의 안전 미션을 통과하고 <b>안전 배지 6개</b>를 모으면, 너희가 우리 반 안전 지킴이야!"</p>
-    <ol>
-      <li>버스 — 그림 속 위험한 친구와 안전장치를 찾아요</li>
-      <li>휴게소 — 숨어 있는 위험 행동을 찾아요</li>
-      <li>놀이공원 — 위험하게 노는 친구를 찾아요</li>
-      <li>박물관 — 관람 예절 O/X 퀴즈를 통과해요</li>
-      <li>숙소 — 방 안의 위험을 모두 정리해요</li>
-      <li>한밤의 대피 — 손전등으로 탈출로를 찾아요</li>
-    </ol>
-    <p class="story" style="margin-top:8px">무엇이 위험한지는 <b>스스로 찾아야</b> 해요. 막히면 💡 힌트 버튼! (점수가 조금 깎여요)</p>
+    <p class="tagline">6곳을 돌며 위험을 찾아 <b>안전 배지 6개</b>를 모으는 미션 게임</p>
+    <div class="stage-strip">
+      <div class="sp"><span class="ico">🚌</span>버스</div>
+      <div class="sp"><span class="ico">🏪</span>휴게소</div>
+      <div class="sp"><span class="ico">🎡</span>놀이공원</div>
+      <div class="sp"><span class="ico">🏛️</span>박물관</div>
+      <div class="sp"><span class="ico">🏨</span>숙소</div>
+      <div class="sp"><span class="ico">🚨</span>대피</div>
+    </div>
+    <p class="microhint">위험은 <b>스스로 찾기</b> · 막히면 💡 힌트</p>
     <div class="best" id="best" style="display:none">최고 기록 <b id="best-txt"></b><span class="remix-tag" id="remix-tag" style="display:none">리믹스 모드!</span></div>
     <div class="achv-row" id="achv-row" style="display:none"></div>
     <div class="diffrow">
