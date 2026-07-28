@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>현장체험학습 안전학습 — 현장체험학습 안전교육 방탈출</title>
+<title>현장체험학습 안전 대탈출 — 현장체험학습 안전교육 방탈출</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
@@ -391,7 +391,7 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
 
 <!-- 인트로 -->
 <section class="screen on" id="scr-intro">
-  <div class="hero"><img src="img/trip01_cover.jpg" alt="현장체험학습 안전학습 표지"></div>
+  <div class="hero"><img src="img/trip01_cover.jpg" alt="현장체험학습 안전 대탈출 표지"></div>
   <div class="intro-card">
     <h2>배지 6개를 모아야 여행이 완성돼요</h2>
     <p class="story">설레는 현장체험학습 날 아침, 선생님이 비밀 미션 카드를 내밀었다.<br>"각 장소의 안전 미션을 통과하고 <b>안전 배지 6개</b>를 모으면, 너희가 우리 반 안전 지킴이야!"</p>
@@ -609,7 +609,7 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
     <div class="cert-label">CERTIFICATE</div>
     <h2>안전 지킴이 수료증</h2>
     <span class="name" id="cert-name"></span>
-    <p>위 학생은 「현장체험학습 안전학습」의 안전 미션 6가지를 모두 통과하고<br>안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.</p>
+    <p>위 학생은 「현장체험학습 안전 대탈출」의 안전 미션 6가지를 모두 통과하고<br>안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.</p>
     <p style="margin-top:10px;font-weight:700;color:#B07A10">나의 다짐</p>
     <ol class="cert-pledges" id="cert-pledges"></ol>
     <div class="cert-grade" id="cert-grade"></div>
@@ -1879,7 +1879,7 @@ async function downloadCert() {
   x.strokeStyle = "#2E2418"; x.lineWidth = 3;
   x.beginPath(); x.moveTo(W / 2 - nw, 312); x.lineTo(W / 2 + nw, 312); x.stroke();
   x.fillStyle = "#5B5044"; x.font = "400 23px Pretendard, sans-serif";
-  x.fillText("위 학생은 「현장체험학습 안전학습」의 안전 미션 6가지를 모두 통과하고", W / 2, 372);
+  x.fillText("위 학생은 「현장체험학습 안전 대탈출」의 안전 미션 6가지를 모두 통과하고", W / 2, 372);
   x.fillText("안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.", W / 2, 408);
   for (let i = 0; i < 6; i++) drawShield(x, W / 2 - (6 * 46) / 2 + i * 46 + 23, 472, 15);
   if (S.pledges.length) {
