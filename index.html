@@ -179,17 +179,11 @@ body[data-stage] .appbar{box-shadow:inset 0 -3px 0 var(--stage-c);transition:box
 .tagline b{color:var(--amber)}
 .stage-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
 .stage-strip .sp{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r-s);padding:10px 4px;font-size:12px;font-weight:700;color:var(--tx2)}
-.stage-strip .ico{font-size:22px}
+.stage-strip .ico{width:40px;height:40px;display:block}
 .microhint{font-size:12.5px;color:var(--tx2);text-align:center;margin-bottom:10px}
 .microhint b{color:var(--tx)}
 .best{font-size:13px;color:var(--tx2);margin:6px 0 12px}
 .best b{color:var(--amber)}
-.diffrow{display:flex;gap:10px}
-.diff{flex:1;border:2px solid var(--bd);border-radius:var(--r-s);background:var(--bg2);padding:12px 6px;text-align:center;box-shadow:0 4px 0 #0E1426;transition:transform .06s,box-shadow .06s}
-.diff:active{transform:translateY(3px);box-shadow:0 1px 0 #0E1426}
-.diff b{display:block;font-size:17px;font-weight:800}
-.diff span{display:block;font-size:11.5px;color:var(--tx2);margin-top:3px;line-height:1.45}
-.diff.d1 b{color:var(--ok)}.diff.d2 b{color:var(--amber)}.diff.d3 b{color:var(--err)}
 
 .badge-recap{display:flex;justify-content:center;gap:6px;margin:16px 12px 0}
 .badge-recap .bg{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0;animation:badgein .5s both}
@@ -366,11 +360,9 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
   .cert .name{font-size:19px}
   .badge-recap svg{width:30px;height:30px}
   .badge-recap small{font-size:8.5px}
-  .diff b{font-size:15.5px}
-  .diff span{font-size:10.5px}
   .tagline{font-size:14px}
   .stage-strip .sp{font-size:11px;padding:8px 2px}
-  .stage-strip .ico{font-size:19px}
+  .stage-strip .ico{width:34px;height:34px}
   .sheet{padding:18px 16px calc(16px + env(safe-area-inset-bottom))}
   .sheet h3{font-size:18px}
   .sheet p{font-size:15px}
@@ -400,21 +392,17 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
   <div class="intro-card">
     <p class="tagline">6곳을 돌며 위험을 찾아 <b>안전 배지 6개</b>를 모으는 미션 게임</p>
     <div class="stage-strip">
-      <div class="sp"><span class="ico">🚌</span>버스</div>
-      <div class="sp"><span class="ico">🏪</span>휴게소</div>
-      <div class="sp"><span class="ico">🎡</span>놀이공원</div>
-      <div class="sp"><span class="ico">🏛️</span>박물관</div>
-      <div class="sp"><span class="ico">🏨</span>숙소</div>
-      <div class="sp"><span class="ico">🚨</span>대피</div>
+      <div class="sp"><img class="ico" src="img/icons/bus.png" alt="">버스</div>
+      <div class="sp"><img class="ico" src="img/icons/rest.png" alt="">휴게소</div>
+      <div class="sp"><img class="ico" src="img/icons/park.png" alt="">놀이공원</div>
+      <div class="sp"><img class="ico" src="img/icons/museum.png" alt="">박물관</div>
+      <div class="sp"><img class="ico" src="img/icons/room.png" alt="">숙소</div>
+      <div class="sp"><img class="ico" src="img/icons/escape.png" alt="">대피</div>
     </div>
     <p class="microhint">위험은 <b>스스로 찾기</b> · 막히면 💡 힌트</p>
     <div class="best" id="best" style="display:none">최고 기록 <b id="best-txt"></b><span class="remix-tag" id="remix-tag" style="display:none">리믹스 모드!</span></div>
     <div class="achv-row" id="achv-row" style="display:none"></div>
-    <div class="diffrow">
-      <button class="diff d1" data-diff="easy"><b>쉬움</b><span>하트 5개<br>넉넉한 시간</span></button>
-      <button class="diff d2" data-diff="normal"><b>보통</b><span>하트 3개<br>점수 ×1.5</span></button>
-      <button class="diff d3" data-diff="hard"><b>도전</b><span>하트 2개<br>점수 ×2</span></button>
-    </div>
+    <button class="btn" id="start-btn">시작하기</button>
   </div>
 </section>
 
@@ -678,7 +666,6 @@ const ACHV = [
   {k:"nomiss",    icon:"🎯", name:"그림 오탭 제로"},
   {k:"fullheart", icon:"💖", name:"하트 지킴이"},
   {k:"combo8",    icon:"🔥", name:"콤보 x8 달성"},
-  {k:"hard",      icon:"👑", name:"도전 난이도 클리어"},
   {k:"eggs",      icon:"🐥", name:"숨은 친구 모두 찾기"},
   {k:"perfect",   icon:"🎓", name:"최종 시험 한 번에 통과"}
 ];
@@ -1234,9 +1221,8 @@ function loadBest() {
   });
   row.style.display = "flex";
 })();
-$$(".diff").forEach(btn => btn.addEventListener("click", () => {
+$("#start-btn").addEventListener("click", () => {
   if (S.playing) return; // 이중 실행 가드
-  S.diff = btn.dataset.diff;
   S.lives = D().lives;
   applyHitboxes(); renderLives(); renderBadges();
   /* 리믹스 — 클리어 이력이 있으면 글자 없는 씬(버스·놀이공원)을 랜덤 좌우반전 */
@@ -1245,7 +1231,7 @@ $$(".diff").forEach(btn => btn.addEventListener("click", () => {
   sfx.tap(); S.playing = true;
   BGM.play("bus");
   stageIntro("STAGE 1", "버스", "아침 8시, 출발 직전 — 기사님의 안전 점검을 도와 점검표를 완성하라!", () => go("#scr-s1", 0));
-}));
+});
 
 /* ---------- 스테이지1 버스 (점검표) ---------- */
 const S1 = {
@@ -1728,7 +1714,6 @@ function checkAchievements() {
     nomiss:    S.missCount === 0,
     fullheart: !S.heartLost,
     combo8:    S.maxCombo >= 8,
-    hard:      S.diff === "hard",
     eggs:      eggFound().size >= 6,
     perfect:   S.finalPerfect
   };
