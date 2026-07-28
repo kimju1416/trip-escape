@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>현장체험학습 안전 대탈출 — 현장체험학습 안전교육 방탈출</title>
+<title>현장체험학습 안전학습 — 현장체험학습 안전교육 방탈출</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
@@ -391,7 +391,7 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
 
 <!-- 인트로 -->
 <section class="screen on" id="scr-intro">
-  <div class="hero"><img src="img/trip01_cover.jpg" alt="현장체험학습 안전 대탈출 표지"></div>
+  <div class="hero"><img src="img/trip01_cover.jpg" alt="현장체험학습 안전학습 표지"></div>
   <div class="intro-card">
     <h2>배지 6개를 모아야 여행이 완성돼요</h2>
     <p class="story">설레는 현장체험학습 날 아침, 선생님이 비밀 미션 카드를 내밀었다.<br>"각 장소의 안전 미션을 통과하고 <b>안전 배지 6개</b>를 모으면, 너희가 우리 반 안전 지킴이야!"</p>
@@ -609,7 +609,7 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
     <div class="cert-label">CERTIFICATE</div>
     <h2>안전 지킴이 수료증</h2>
     <span class="name" id="cert-name"></span>
-    <p>위 학생은 「현장체험학습 안전 대탈출」의 안전 미션 6가지를 모두 통과하고<br>안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.</p>
+    <p>위 학생은 「현장체험학습 안전학습」의 안전 미션 6가지를 모두 통과하고<br>안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.</p>
     <p style="margin-top:10px;font-weight:700;color:#B07A10">나의 다짐</p>
     <ol class="cert-pledges" id="cert-pledges"></ol>
     <div class="cert-grade" id="cert-grade"></div>
@@ -794,89 +794,35 @@ const sfx = {
   over(){ [392,330,262,196].forEach((f,i)=>beep(f,.22,"sawtooth",.12,i*.16)) },
   siren(){ [660,880,660,880].forEach((f,i)=>beep(f,.22,"triangle",.1,i*.24)) }
 };
-/* 배경음 — 스테이지별 32스텝 칩튠 트랙 + 드럼 */
-const NT = {
-  C3:131,D3:147,E3:165,F3:175,G3:196,A3:220,Bb3:233,B3:247,
-  C4:262,D4:294,E4:330,F4:349,G4:392,A4:440,Bb4:466,B4:494,
-  C5:523,D5:587,E5:659,F5:698,G5:784,A5:880
-};
+/* 배경음 — 스테이지별 실제 음원 루프(무료 저작권 프리, freepd.com/CC0) */
 const BGM = {
-  timer:null, step:0, cur:null,
-  tracks:{
-    /* 버스 — 밝은 로드트립(C장조) */
-    bus:{ tempo:124, wave:"square", melVol:.03, bassVol:.05, drum:"full",
-      mel:["G4",0,"C5","E5", 0,"C5",0,"G4", "A4",0,"C5","A4", 0,"G4",0,0,
-           "F4",0,"A4","C5", 0,"A4",0,"F4", "G4",0,"B4","D5", 0,"G4",0,0],
-      bass:["C3",0,0,"C3", "C3",0,"E3",0, "F3",0,0,"F3", "G3",0,"G3",0,
-            "C3",0,0,"C3", "A3",0,"A3",0, "F3",0,"G3",0, "C3",0,0,0] },
-    /* 휴게소 — 여유로운 산책(F장조) */
-    rest:{ tempo:110, wave:"triangle", melVol:.032, bassVol:.05, drum:"soft",
-      mel:["F4",0,0,"A4", 0,"C5",0,0, "A4",0,"G4",0, "F4",0,0,0,
-           "G4",0,0,"Bb4", 0,"A4",0,0, "F4",0,"G4",0, "F4",0,0,0],
-      bass:["F3",0,0,0, "F3",0,0,0, "Bb3",0,0,0, "C4",0,0,0,
-            "F3",0,0,0, "D3",0,0,0, "Bb3",0,"C4",0, "F3",0,0,0] },
-    /* 놀이공원 — 신나는 축제(G장조) */
-    park:{ tempo:142, wave:"square", melVol:.03, bassVol:.052, drum:"full",
-      mel:["G4","B4","D5","B4", "G4",0,"D5",0, "E5",0,"D5","B4", "G4",0,0,0,
-           "C5","E5","G5","E5", "C5",0,"A4",0, "B4",0,"D5",0, "G4",0,0,0],
-      bass:["G3",0,"G3",0, "G3",0,"D3",0, "C3",0,"C3",0, "D3",0,"D3",0,
-            "G3",0,"G3",0, "E3",0,"E3",0, "D3",0,"D3",0, "G3",0,0,0] },
-    /* 박물관 — 고요한 호기심(a단조) */
-    museum:{ tempo:96, wave:"sine", melVol:.045, bassVol:.05, drum:"soft",
-      mel:["A4",0,0,"C5", 0,"B4",0,0, "E4",0,"A4",0, 0,0,0,0,
-           "F4",0,0,"A4", 0,"G4",0,0, "E4",0,"D4",0, "C4",0,0,0],
-      bass:["A3",0,0,0, "A3",0,0,0, "E3",0,0,0, "E3",0,0,0,
-            "F3",0,0,0, "F3",0,0,0, "G3",0,0,0, "A3",0,0,0] },
-    /* 숙소 — 포근한 밤(C장조 자장가) */
-    room:{ tempo:100, wave:"triangle", melVol:.036, bassVol:.048, drum:"none",
-      mel:["C5",0,0,"E5", 0,"G4",0,0, "A4",0,"G4",0, "E4",0,0,0,
-           "F4",0,0,"A4", 0,"G4",0,0, "E4",0,"D4",0, "C4",0,0,0],
-      bass:["C3",0,0,0, "G3",0,0,0, "A3",0,0,0, "E3",0,0,0,
-            "F3",0,0,0, "C3",0,0,0, "G3",0,0,0, "C3",0,0,0] },
-    /* 대피 — 긴박한 질주(d단조) */
-    escape:{ tempo:150, wave:"square", melVol:.034, bassVol:.055, drum:"urgent",
-      mel:["D5",0,"A4",0, "D5",0,"A4",0, "Bb4",0,"A4",0, "G4",0,"F4",0,
-           "E4",0,"A4",0, "D5",0,"E5",0, "F5",0,"E5",0, "D5",0,0,0],
-      bass:["D3",0,"D3","D3", "D3",0,"D3",0, "Bb3",0,"Bb3",0, "A3",0,"A3",0,
-            "D3",0,"D3","D3", "D3",0,"D3",0, "C4",0,"C4",0, "A3",0,"A3",0] }
-  },
-  drum(style, s) {
-    if (style === "full") {
-      if (s === 0 || s === 8) kick(.15);
-      if (s === 4 || s === 12) noiseHit(.05, .08, 2600);
-      if (s % 2 === 0) noiseHit(.02, .03, 9000);
-    } else if (style === "soft") {
-      if (s === 0 || s === 8) kick(.09);
-      if (s % 4 === 0) noiseHit(.015, .03, 9500);
-    } else if (style === "urgent") {
-      if (s % 4 === 0) kick(.16);
-      if (s === 4 || s === 12) noiseHit(.06, .07, 2400);
-      noiseHit(.018, .02, 10000);
-    }
+  el:null, cur:null,
+  files:{ bus:"audio/bus.mp3", rest:"audio/rest.mp3", park:"audio/park.mp3",
+          museum:"audio/museum.mp3", room:"audio/room.mp3", escape:"audio/escape.mp3" },
+  ensure() {
+    if (this.el) return this.el;
+    this.el = new Audio();
+    this.el.loop = true;
+    this.el.volume = .45;
+    this.el.muted = S.muted;
+    return this.el;
   },
   play(name) {
-    const tk = this.tracks[name];
-    if (!tk) { this.stop(); return; }
-    if (this.cur === name && this.timer) return; // 같은 트랙이면 재시작 안 함
-    this.stop(); this.cur = name;
-    const dur = 60 / tk.tempo / 4;
-    this.step = 0;
-    this.timer = setInterval(() => {
-      const s = this.step, s16 = s % 16;
-      const m = tk.mel[s], b = tk.bass[s];
-      if (b) beep(NT[b] || 0, dur * 1.7, "triangle", tk.bassVol);
-      if (m) beep(NT[m] || 0, dur * .92, tk.wave, tk.melVol);
-      this.drum(tk.drum, s16);
-      this.step = (this.step + 1) % 32;
-    }, dur * 1000);
+    const src = this.files[name];
+    if (!src) { this.stop(); return; }
+    const el = this.ensure();
+    if (this.cur !== name) { this.cur = name; el.src = src; el.currentTime = 0; }
+    el.muted = S.muted;
+    el.play().catch(() => {});
   },
   start(){ this.play(this.cur || "bus"); }, // 하위호환
-  stop(){ clearInterval(this.timer); this.timer = null; }
+  stop(){ if (this.el) this.el.pause(); this.cur = null; }
 };
 /* 스테이지 인덱스 → BGM 트랙 */
 const STAGE_TRACK = ["bus", "rest", "park", "museum", "room", "escape"];
 $("#snd").addEventListener("click", () => {
   S.muted = !S.muted;
+  if (BGM.el) BGM.el.muted = S.muted;
   $("#snd .wav").style.display = S.muted ? "none" : "";
   toast(S.muted ? "소리 끔" : "소리 켬");
 });
@@ -1933,7 +1879,7 @@ async function downloadCert() {
   x.strokeStyle = "#2E2418"; x.lineWidth = 3;
   x.beginPath(); x.moveTo(W / 2 - nw, 312); x.lineTo(W / 2 + nw, 312); x.stroke();
   x.fillStyle = "#5B5044"; x.font = "400 23px Pretendard, sans-serif";
-  x.fillText("위 학생은 「현장체험학습 안전 대탈출」의 안전 미션 6가지를 모두 통과하고", W / 2, 372);
+  x.fillText("위 학생은 「현장체험학습 안전학습」의 안전 미션 6가지를 모두 통과하고", W / 2, 372);
   x.fillText("안전 배지 6개를 모았으므로 우리 반 안전 지킴이로 인정합니다.", W / 2, 408);
   for (let i = 0; i < 6; i++) drawShield(x, W / 2 - (6 * 46) / 2 + i * 46 + 23, 472, 15);
   if (S.pledges.length) {
