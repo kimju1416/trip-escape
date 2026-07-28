@@ -185,6 +185,12 @@ body[data-stage] .appbar{box-shadow:inset 0 -3px 0 var(--stage-c);transition:box
 .best{font-size:13px;color:var(--tx2);margin:6px 0 12px}
 .best b{color:var(--amber)}
 
+/* ── 제작자 크레딧 — 눈에 띄지 않게 ── */
+.credit{display:flex;align-items:center;justify-content:center;gap:5px;margin:22px 12px 0;font-size:11.5px;color:var(--tx2);opacity:.55}
+.credit svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7;flex:0 0 auto}
+.credit a{color:inherit;font-weight:600;text-decoration:none}
+.credit a:active{color:var(--amber)}
+
 .badge-recap{display:flex;justify-content:center;gap:6px;margin:16px 12px 0}
 .badge-recap .bg{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0;animation:badgein .5s both}
 .badge-recap .bg:nth-child(2){animation-delay:.07s}.badge-recap .bg:nth-child(3){animation-delay:.14s}
@@ -395,6 +401,10 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
     <div class="achv-row" id="achv-row" style="display:none"></div>
     <button class="btn" id="start-btn">시작하기</button>
   </div>
+  <p class="credit">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.15" fill="currentColor" stroke="none"/></svg>
+    <a href="https://instagram.com/kimju.zip" target="_blank" rel="noopener noreferrer">kimju.zip</a>
+  </p>
 </section>
 
 <!-- 스테이지1 버스 -->
@@ -581,7 +591,6 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
       <div><span>남은 하트</span><b id="r-lives">0</b></div>
       <div><span>모은 배지</span><b id="r-badges">6 / 6</b></div>
       <div><span>숨은 친구</span><b id="r-eggs">0 / 6</b></div>
-      <div><span>난이도</span><b id="r-diff">보통</b></div>
     </div>
   </div>
   <div class="achvlist" id="achv-end" style="display:none">
@@ -614,6 +623,10 @@ body.debug .egg{outline:3px dotted rgba(59,184,165,.95);background:rgba(59,184,1
     <div id="rule-box"></div>
   </div>
   <div class="pad"><button class="btn sub" id="btn-retry">처음부터 다시 하기</button></div>
+  <p class="credit">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.15" fill="currentColor" stroke="none"/></svg>
+    <a href="https://instagram.com/kimju.zip" target="_blank" rel="noopener noreferrer">kimju.zip</a>
+  </p>
 </section>
 
 </div>
@@ -1193,11 +1206,12 @@ function loadBest() {
 }
 (function introHeader() {
   const best = loadBest();
-  const parts = ["easy", "normal", "hard"].filter(k => best[k])
-    .map(k => DIFF[k].label + " " + best[k].score + "점·" + best[k].grade);
-  if (parts.length) {
+  /* 구버전 난이도별 기록이 남아 있어도 가장 높은 점수 하나만 보여준다 */
+  const recs = ["easy", "normal", "hard"].filter(k => best[k]).map(k => best[k]);
+  if (recs.length) {
+    const top = recs.reduce((a, b) => (b.score > a.score ? b : a));
     $("#best").style.display = "block";
-    $("#best-txt").textContent = parts.join("  /  ");
+    $("#best-txt").textContent = top.score + "점 · " + top.grade;
     $("#remix-tag").style.display = ""; // 2회차부터 리믹스
   }
   const got = loadJSON(ACHV_KEY, {});
@@ -1757,8 +1771,7 @@ function showResult() {
   $("#r-combo").textContent = "x" + S.maxCombo;
   $("#r-lives").textContent = S.lives + "개";
   $("#r-badges").textContent = S.badges + " / 6";
-  $("#r-diff").textContent = D().label;
-  /* 난이도별 신기록 판정 */
+  /* 신기록 판정 */
   const best = loadBest();
   const prev = best[S.diff];
   const isNew = !prev || S.score > prev.score;
