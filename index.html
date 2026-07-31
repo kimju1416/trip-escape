@@ -150,7 +150,9 @@ body[data-stage] .appbar{box-shadow:inset 0 -3px 0 var(--stage-c);transition:box
 @keyframes stampin{0%{transform:rotate(-12deg) scale(2.4);opacity:0}70%{transform:rotate(-12deg) scale(.9);opacity:1}100%{transform:rotate(-12deg) scale(1)}}
 /* 대피 순서 카드 */
 .ordergrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
-.ordercard{position:relative;min-height:86px;border:2px solid var(--bd);border-radius:var(--r-s);background:var(--bg2);padding:12px 12px 12px 14px;font-size:14px;font-weight:700;line-height:1.45;text-align:left;box-shadow:0 4px 0 #0E1426;transition:transform .06s,box-shadow .06s}
+.ordercard{position:relative;min-height:86px;border:2px solid var(--bd);border-radius:var(--r-s);background:var(--bg2);padding:0 0 10px;font-size:13.5px;font-weight:700;line-height:1.4;text-align:left;box-shadow:0 4px 0 #0E1426;transition:transform .06s,box-shadow .06s}
+.ordercard .oc-img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;margin-bottom:8px;border-radius:10px 10px 0 0}
+.ordercard span{display:block;padding:0 11px}
 .ordercard:active{transform:translateY(3px);box-shadow:0 1px 0 #0E1426}
 .ordercard.done{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);box-shadow:none}
 .ordercard.done::after{content:attr(data-ord);position:absolute;top:-10px;right:-8px;width:28px;height:28px;border-radius:50%;background:var(--ok);color:#0B1B12;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;animation:markpop .4s}
@@ -1515,7 +1517,9 @@ function orderPuzzle(opt) {
       idx.forEach(i => {
         const b = document.createElement("button");
         b.className = "ordercard";
-        b.textContent = opt.cards[i];
+        const c = opt.cards[i];
+        if (typeof c === "string") b.textContent = c;
+        else b.innerHTML = '<img class="oc-img" src="' + c.img + '" alt=""><span>' + c.t + '</span>';
         b.dataset.i = i;
         b.addEventListener("click", () => this.tap(b));
         g.appendChild(b);
@@ -1545,10 +1549,10 @@ function orderPuzzle(opt) {
 const S6ORDER = orderPuzzle({
   grid:"#ordergrid",
   cards:[
-    "\"불이야!\" 외치고 화재경보기 누르기",
-    "젖은 수건으로 코와 입을 막기",
-    "몸을 낮추고 벽을 따라 이동하기",
-    "계단으로 내려가 밖에서 어른에게 알리기"
+    {img:"img/steps/fire1.jpg", t:"\"불이야!\" 외치고 화재경보기 누르기"},
+    {img:"img/steps/fire2.jpg", t:"젖은 수건으로 코와 입을 막기"},
+    {img:"img/steps/fire3.jpg", t:"몸을 낮추고 벽을 따라 이동하기"},
+    {img:"img/steps/fire4.jpg", t:"계단으로 내려가 밖으로 대피하기"}
   ],
   onComplete() {
     addScore(200);
@@ -1569,15 +1573,15 @@ const S6ORDER = orderPuzzle({
 const S119 = orderPuzzle({
   grid:"#grid119",
   cards:[
-    "침착하게 119를 눌러요",
-    "무슨 일인지 말해요 — \"불이 났어요!\"",
-    "여기가 어디인지 말해요 — 숙소 이름과 층",
-    "끊으라고 할 때까지 전화를 끊지 않아요"
+    {img:"img/steps/call1.jpg", t:"침착하게 119를 눌러요"},
+    {img:"img/steps/call2.jpg", t:"무슨 일인지 말해요 — \"불이 났어요!\""},
+    {img:"img/steps/call3.jpg", t:"어디인지 말해요 — 학교 이름과 층"},
+    {img:"img/steps/call4.jpg", t:"끊으라고 할 때까지 기다려요"}
   ],
   wrongMsg:"신고 순서가 달라요. 전화 걸기 → 무슨 일 → 어디인지!",
   onComplete() {
     addScore(200);
-    addRule("119 신고: 무슨 일인지·어디인지 또박또박 말하고, 끊으라고 할 때까지 기다려요.", "escape");
+    addRule("119 신고: 무슨 일인지·어디인지(학교 이름과 층) 또박또박 말하고, 끊으라고 할 때까지 기다려요.", "escape");
     gainBadge();
     sfx.clear(); confetti();
     setTimeout(() => {
