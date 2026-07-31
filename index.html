@@ -1575,13 +1575,13 @@ const S119 = orderPuzzle({
   cards:[
     {img:"img/steps/call1.jpg", t:"침착하게 119를 눌러요"},
     {img:"img/steps/call2.jpg", t:"무슨 일인지 말해요 — \"불이 났어요!\""},
-    {img:"img/steps/call3.jpg", t:"어디인지 말해요 — 학교 이름과 층"},
+    {img:"img/steps/call3.jpg", t:"어디인지 말해요 — 숙소 이름과 층"},
     {img:"img/steps/call4.jpg", t:"끊으라고 할 때까지 기다려요"}
   ],
   wrongMsg:"신고 순서가 달라요. 전화 걸기 → 무슨 일 → 어디인지!",
   onComplete() {
     addScore(200);
-    addRule("119 신고: 무슨 일인지·어디인지(학교 이름과 층) 또박또박 말하고, 끊으라고 할 때까지 기다려요.", "escape");
+    addRule("119 신고: 무슨 일인지·어디인지 또박또박 말하고, 끊으라고 할 때까지 기다려요.", "escape");
     gainBadge();
     sfx.clear(); confetti();
     setTimeout(() => {
